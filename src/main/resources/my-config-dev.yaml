@@ -1,4 +1,16 @@
 http:
   port: "8081"
   
+ap:
+  username: "RomanEmpire0522"
+  password: "RomanEmpire0522"
+  
+deployment:
+  app:
+    name: "arithmetic-cicd-api"
+    runtime: "4.4.0"
+  region: "us-east-2"
+  workers: "1"
+  workerType: "MICRO"
+  
   
