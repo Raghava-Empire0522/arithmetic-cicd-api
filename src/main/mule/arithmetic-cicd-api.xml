@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="3b307798-9539-47de-b2d0-e1d511762778" >
+		<http:listener-connection host="0.0.0.0" port="${http.port}" />
+	</http:listener-config>
+	<configuration-properties doc:name="Configuration properties" doc:id="45e83dcd-097f-46d0-98ed-8e7f0f4961ea" file="my-config-dev.yaml" />
+	<flow name="arithmetic-cicd-apiFlow" doc:id="d5e68ea3-e007-497b-a37c-4dc1d1d1c49b" >
+		<http:listener doc:name="Listener" doc:id="0f7c7aa1-eb93-48c8-b0ad-bf79405f2dcd" config-ref="HTTP_Listener_config" path="/cicd"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b9245f12-53d4-4a85-bd7b-e5bf52b1b13b" message="-------flow invoked-----------"/>
+		<ee:transform doc:name="Transform Message" doc:id="7a78278c-b305-4df7-8fe8-6816cffd3630" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="num1" ><![CDATA[attributes.queryParams.num1]]></ee:set-variable>
+				<ee:set-variable variableName="num2" ><![CDATA[attributes.queryParams.num2]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="20a18038-628d-4d3c-a66b-7f8b0c23b766" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"message": "welcome to arithmetic operations",
+	"addition": (vars.num1 as Number + vars.num2 as Number),
+	"subtraction": (vars.num1 as Number - vars.num2 as Number),
+	"multiplication": (vars.num1 as Number * vars.num2 as Number),
+	"division": (vars.num1 as Number / vars.num2 as Number)
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="111b96dc-2f6e-4d93-b336-d6f27d4c7ac9" message="---------------arithmetic-cicd-flow-ended-------------"/>
+	</flow>
+</mule>
